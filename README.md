@@ -1,10 +1,2 @@
--- Main.ipynb --
-              --> Dados
-              --> Modelos
-              --> Treino e testes
-              --> Armazenamento Resultados
-
--- vizualize.ipynb --
-              --> Análises
-              --> Gráficos
-              --> Resultados
+Projeto de Conclusão de Curso em Engenharia Física II. 
+Aluno: Marlon Romabaldi Bonatto
