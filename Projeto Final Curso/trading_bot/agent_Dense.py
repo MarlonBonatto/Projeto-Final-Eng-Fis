@@ -1,7 +1,5 @@
 import random
-
 from collections import deque
-
 import numpy as np
 import tensorflow as tf
 import keras.backend as K
@@ -30,7 +28,7 @@ class Agent:
         self.strategy = strategy
 
         # agent config
-        self.state_size = state_size    	# normalized previous days
+        self.state_size = state_size    	
         self.action_size = 3           		# [sit, buy, sell]
         self.model_name = model_name
         self.inventory = []
@@ -39,29 +37,19 @@ class Agent:
 
         # model config
         self.model_name = model_name
-        self.gamma = 0.95 # affinity for long term reward
+        self.gamma = 0.95 
         self.epsilon = 1.0
         self.epsilon_min = 0.01
         self.epsilon_decay = 0.995
         self.learning_rate = 0.001
         self.loss = huber_loss
-        self.custom_objects = {"huber_loss": huber_loss}  # important for loading the model from memory
-        #self.optimizer = Adam(lr=self.learning_rate)
+        self.custom_objects = {"huber_loss": huber_loss}  
         self.optimizer = Adam(learning_rate=self.learning_rate)
 
         if pretrained and self.model_name is not None:
             self.model = self.load(self.model_name)
         else:
             self.model = self._model()
-
-        # strategy config
-        if self.strategy in ["t-dqn", "double-dqn"]:
-            self.n_iter = 1
-            self.reset_every = reset_every
-
-            # target network
-            self.target_model = clone_model(self.model)
-            self.target_model.set_weights(self.model.get_weights())
 
     def _model(self):
         """Creates the model
@@ -91,7 +79,7 @@ class Agent:
 
         if self.first_iter:
             self.first_iter = False
-            return 1 # make a definite buy on the first iter
+            return 1 
 
         action_probs = self.model.predict(state)
         return np.argmax(action_probs[0])
@@ -118,60 +106,13 @@ class Agent:
 
                 X_train.append(state[0])
                 y_train.append(q_values[0])
-
-        # DQN with fixed targets
-        elif self.strategy == "t-dqn":
-            if self.n_iter % self.reset_every == 0:
-                # reset target model weights
-                self.target_model.set_weights(self.model.get_weights())
-
-            for state, action, reward, next_state, done in mini_batch:
-                if done:
-                    target = reward
-                else:
-                    # approximate deep q-learning equation with fixed targets
-                    target = reward + self.gamma * np.amax(self.target_model.predict(next_state)[0])
-
-                # estimate q-values based on current state
-                q_values = self.model.predict(state)
-                # update the target for current action based on discounted reward
-                q_values[0][action] = target
-
-                X_train.append(state[0])
-                y_train.append(q_values[0])
-
-        # Double DQN
-        elif self.strategy == "double-dqn":
-            if self.n_iter % self.reset_every == 0:
-                # reset target model weights
-                self.target_model.set_weights(self.model.get_weights())
-
-            for state, action, reward, next_state, done in mini_batch:
-                if done:
-                    target = reward
-                else:
-                    # approximate double deep q-learning equation
-                    target = reward + self.gamma * self.target_model.predict(next_state)[0][np.argmax(self.model.predict(next_state)[0])]
-
-                # estimate q-values based on current state
-                q_values = self.model.predict(state)
-                # update the target for current action based on discounted reward
-                q_values[0][action] = target
-
-                X_train.append(state[0])
-                y_train.append(q_values[0])
                 
-        else:
-            raise NotImplementedError()
-
         # update q-function parameters based on huber loss gradient
         loss = self.model.fit(
             np.array(X_train), np.array(y_train),
             epochs=1, verbose=0
         ).history["loss"][0]
 
-        # as the training goes on we want the agent to
-        # make less random and more optimal decisions
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
 
@@ -182,5 +123,3 @@ class Agent:
 
     def load(self, model_name):
         return load_model(self.model_name, custom_objects=self.custom_objects)
-        
-        #return load_model("models/dqn.h5", custom_objects=self.custom_objects)
