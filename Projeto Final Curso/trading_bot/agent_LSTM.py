@@ -43,14 +43,6 @@ class Agent:
         else:
             self.model = self._model()
 
-        # Strategy config
-        if self.strategy in ["t-dqn", "double-dqn"]:
-            self.n_iter = 1
-            self.reset_every = reset_every
-            # Target network
-            self.target_model = clone_model(self.model)
-            self.target_model.set_weights(self.model.get_weights())
-
     def _model(self): 
         
         model = Sequential()
@@ -102,44 +94,6 @@ class Agent:
                 X_train.append(state[0])
                 y_train.append(q_values[0])
 
-        elif self.strategy == "t-dqn":
-            if self.n_iter % self.reset_every == 0:
-                self.target_model.set_weights(self.model.get_weights())
-
-            for state, action, reward, next_state, done in mini_batch:
-                state = state.reshape(1, self.state_size, 1)
-                next_state = next_state.reshape(1, self.state_size, 1)
-
-                if done:
-                    target = reward
-                else:
-                    target = reward + self.gamma * np.amax(self.target_model.predict(next_state, verbose=0)[0])
-
-                q_values = self.model.predict(state, verbose=0)
-                q_values[0][action] = target
-
-                X_train.append(state[0])
-                y_train.append(q_values[0])
-
-        elif self.strategy == "double-dqn":
-            if self.n_iter % self.reset_every == 0:
-                self.target_model.set_weights(self.model.get_weights())
-
-            for state, action, reward, next_state, done in mini_batch:
-                state = state.reshape(1, self.state_size, 1)
-                next_state = next_state.reshape(1, self.state_size, 1)
-
-                if done:
-                    target = reward
-                else:
-                    target = reward + self.gamma * self.target_model.predict(next_state, verbose=0)[0][np.argmax(self.model.predict(next_state, verbose=0)[0])]
-
-                q_values = self.model.predict(state, verbose=0)
-                q_values[0][action] = target
-
-                X_train.append(state[0])
-                y_train.append(q_values[0])
-
         loss = self.model.fit(
             np.array(X_train), np.array(y_train),
             epochs=1, verbose=0
@@ -158,3 +112,4 @@ class Agent:
 
     def load(self):
         return load_model("models/dqn.h5", custom_objects=self.custom_objects)
+        
