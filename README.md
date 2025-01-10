@@ -24,8 +24,20 @@ Operações é a ação tomada pelo modelo.
 
 
 
+Plots --> Contém gráficos realizados em visualize.ipynb
+
+
+
+models/testados_janelas_moveis --> Contém os modelos testados, especificando o intervalo de teste
+
+
+
+trading_bot --> Contém os agentes e ambientes utilizados. 
+
+
+
 Main.ipynb --> Importação de dados, treinamento e testes dos modelos. 
 
 
 
-Visualize.ipynb --> Calculo de métricas e gráficos. 
+visualize.ipynb --> Calculo de métricas e gráficos. 
