@@ -43,6 +43,8 @@ Main.ipynb --> Importação de dados, treinamento e testes dos modelos.
 visualize.ipynb --> Calculo de métricas e gráficos. 
 
 
+------------------------------------------------
+------------------------------------------------
 Modo de uso:
 
 Preparar os Arquivos de Dados
@@ -53,7 +55,7 @@ esvaziar os arquivos .csv atuais, os dados serão adicionados aos arquivos .csv
 
 Executar os Experimentos:
 
-Rode o notebook Main.ipynb para gerar novos resultados. Certifique-se de que os arquivos de dados estejam devidamente configurados.
+Rode o notebook Main.ipynb para gerar novos resultados. Certifique-se de que os arquivos de dados estejam devidamente configurados (sem dados).
 
 Gerar Visualizações
 
