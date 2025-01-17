@@ -49,7 +49,7 @@ Preparar os Arquivos de Dados
 
 Para realizar novos experimentos, é necessário:
 
-esvaziar os arquivos .csv atuais.
+esvaziar os arquivos .csv atuais, os dados serão adicionados aos arquivos .csv
 
 Executar os Experimentos:
 
